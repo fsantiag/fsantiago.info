@@ -1,19 +1,16 @@
 language: python
 python:
-  - "3.6"
+- '3.6'
 install: pip install -r requirements.txt
-
 script: make html
-
 addons:
   ssh_known_hosts: fsantiago.info
-
 before_deploy:
-- openssl aes-256-cbc -K $encrypted_da7eec2e51b3_key -iv $encrypted_da7eec2e51b3_iv -in fsantiago.info_rsa.enc -out /tmp/fsantiago.info_rsa -d
+- openssl aes-256-cbc -K $encrypted_da7eec2e51b3_key -iv $encrypted_da7eec2e51b3_iv
+  -in fsantiago.info_rsa.enc -out /tmp/fsantiago.info_rsa -d
 - eval "$(ssh-agent -s)"
 - chmod 600 /tmp/fsantiago.info_rsa
 - ssh-add /tmp/fsantiago.info_rsa
-
 deploy:
   provider: script
   skip_cleanup: true
