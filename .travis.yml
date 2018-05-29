@@ -1,5 +1,6 @@
 language: python
-install:
-    NO_SUDO=1 pip install -r requirements.txt
-script:
-    make html
+install: NO_SUDO=1 pip install -r requirements.txt
+script: make html
+before_install:
+- openssl aes-256-cbc -K $encrypted_da7eec2e51b3_key -iv $encrypted_da7eec2e51b3_iv
+  -in fsantiago.info_rsa.enc -out fsantiago.info_rsa -d
