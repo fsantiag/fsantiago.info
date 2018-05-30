@@ -5,8 +5,13 @@ from __future__ import unicode_literals
 AUTHOR = 'Felipe Santiago'
 SITENAME = 'fsantiago.info'
 SITEURL = ''
+SITESUBTITLE= 'Techonology, living experiences and gaming smashed together!'
+
+THEME = 'themes/hyde'
 
 PATH = 'content'
+#STATIC_PATHS = ['2018-03-18']
+#ARTICLE_PATHS = ['2018-03-18']
 
 TIMEZONE = 'Asia/Singapore'
 
@@ -26,8 +31,8 @@ LINKS = (('Pelican', 'http://getpelican.com/'),
          ('You can modify those links in your config file', '#'),)
 
 # Social widget
-SOCIAL = (('You can add links in your config file', '#'),
-          ('Another social link', '#'),)
+SOCIAL = (('github', 'https://github.com/fsantiag/'),
+        ('linkedin', 'https://www.linkedin.com/in/felipe-santiago'),)
 
 DEFAULT_PAGINATION = False
 
