@@ -345,14 +345,21 @@ tbody tr:nth-child(odd) th {
 }
 .page-title,
 .post-title {
-  margin-top: 0;
+  float: left;
+  margin: 0;
+}
+
+.summary {
+  margin: 0;
+  clear: both;
 }
 
 /* Meta data line below post title */
 .post-date {
   display: block;
-  margin-top: -.5rem;
-  margin-bottom: 1rem;
+  font-size: 1em;
+  float: right;
+  margin: 0;
   color: #9a9a9a;
 }
 

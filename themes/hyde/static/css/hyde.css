@@ -76,6 +76,13 @@ html {
   color: #fff;
 }
 
+/* Archives link */
+
+div#view-archives a {
+    text-align: right;
+    float: right
+}
+
 /* About section */
 
 .sidebar-about h1 {
