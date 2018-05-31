@@ -54,7 +54,7 @@ html {
 }
 @media (min-width: 38em) {
   html {
-    font-size: 20px;
+    font-size: 16px;
   }
 }
 
@@ -111,6 +111,7 @@ p {
     margin-right: 0px;
     margin-bottom: 1.25rem;
     margin-left: 0px;
+    clear: both;
 }
 
 strong {
@@ -346,7 +347,10 @@ tbody tr:nth-child(odd) th {
 .page-title,
 .post-title {
   float: left;
-  margin: 0;
+  margin-bottom: 1em;
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .summary {
@@ -357,7 +361,7 @@ tbody tr:nth-child(odd) th {
 /* Meta data line below post title */
 .post-date {
   display: block;
-  font-size: 1em;
+  font-size: 0.8em;
   float: right;
   margin: 0;
   color: #9a9a9a;
