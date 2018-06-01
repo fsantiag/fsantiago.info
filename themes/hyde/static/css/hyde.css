@@ -115,7 +115,7 @@ div#view-archives a {
   margin: 0 .2rem;
   border-radius: .25rem;
   text-transform: uppercase;
-  font-size: .8rem;
+  font-size: 1rem;
   font-weight: bold;
   float: left;
   width: 17%;
@@ -163,7 +163,7 @@ a.sidebar-nav-item.active:focus {
 
 @media (min-width: 48em) {
   .content {
-    max-width: 38rem;
+    max-width: 54rem;
     margin-left: 20rem;
     margin-right: 2rem;
   }

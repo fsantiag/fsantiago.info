@@ -12,7 +12,10 @@
 			<p></p>
 		</div>
 		<nav class="sidebar-nav">
-			{% for name, link in SOCIAL %}
+      <a class="sidebar-nav-item" href="mailto:jfelipe.sfilho@gmail.com">
+        <i class="fa fa-envelope"></i>
+      </a>
+      {% for name, link in SOCIAL %}
 			<a class="sidebar-nav-item" href="{{ link }}">
 				<i class="fa fa-{{ name }}"></i>
 			</a>
