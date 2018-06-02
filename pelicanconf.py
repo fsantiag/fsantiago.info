@@ -7,13 +7,19 @@ SITENAME = 'fsantiago.info'
 SITEURL = ''
 SITESUBTITLE= 'Techonology, living experiences and gaming smashed together!'
 
+# This is here to allow static files be placed with md files
+STATIC_PATHS=['articles']
+ARTICLE_PATHS=['articles']
+ARTICLE_URL = 'articles/{date:%Y}/{date:%m}/{date:%d}/{slug}.html'
+ARTICLE_SAVE_AS = 'articles/{date:%Y}/{date:%m}/{date:%d}/{slug}.html'
+
 THEME = 'themes/hyde'
 
 PATH = 'content'
 
 TIMEZONE = 'Asia/Singapore'
 
-DEFAULT_LANG = 'en'
+# DEFAULT_LANG = 'en'
 
 # Social widget
 SOCIAL = (('github', 'https://github.com/fsantiag/'),
