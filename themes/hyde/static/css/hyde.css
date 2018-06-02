@@ -84,14 +84,18 @@ div#view-archives a {
     font-weight: bold;
     float: right
 }
+div#page-links a {
+    font-size: 1rem;
+    text-transform: lowercase;
+}
 
 /* About section */
 
 .sidebar-about h1 {
   color: #fff;
   margin-top: 0;
-  font-family: "Abril Fatface", serif;
-  font-size: 3rem;
+  font-family: "Nunito Sans", serif;
+  font-size: 1.5rem;
 }
 
 .sidebar-about .lead {

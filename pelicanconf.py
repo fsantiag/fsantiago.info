@@ -3,12 +3,12 @@
 from __future__ import unicode_literals
 
 AUTHOR = 'Felipe Santiago'
-SITENAME = 'fsantiago.info'
+SITENAME = 'Felipe Santiago'
 SITEURL = ''
 SITESUBTITLE= 'Techonology, living experiences and gaming smashed together!'
 
 # This is here to allow static files be placed with md files
-STATIC_PATHS=['articles']
+STATIC_PATHS=['articles', 'images']
 ARTICLE_PATHS=['articles']
 ARTICLE_URL = 'articles/{date:%Y}/{date:%m}/{date:%d}/{slug}.html'
 ARTICLE_SAVE_AS = 'articles/{date:%Y}/{date:%m}/{date:%d}/{slug}.html'
@@ -19,6 +19,7 @@ PATH = 'content'
 
 TIMEZONE = 'Asia/Singapore'
 
+PROFILE_IMAGE = 'myself.jpg'
 # DEFAULT_LANG = 'en'
 
 # Social widget

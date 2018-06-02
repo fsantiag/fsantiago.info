@@ -2,10 +2,21 @@
 	<div class="container sidebar-sticky">
 		<div class="sidebar-about">
 			<h1>
-				<!-- <a href="/"> -->
-				<!-- 	<img class="profile-picture" src="{{ SITEURL }}/images/{{ PROFILE_IMAGE }}"> -->
-				<!-- 	{{ SITENAME }} -->
-				<!-- </a> -->
+				<a href="/">
+					<img class="profile-picture" src="{{ SITEURL }}/images/{{ PROFILE_IMAGE }}">
+				</a>
+        {% if pages or LINKS %}
+        <nav>
+            {% if not PAGES_SORT_ATTRIBUTE -%}
+                {% set PAGES_SORT_ATTRIBUTE = 'title' %}
+            {%- endif %}
+            {% for page in pages|sort(attribute=PAGES_SORT_ATTRIBUTE) %}
+            <div id="page-links">
+              <a href="{{ SITEURL }}/{{ page.url }}{% if not DISABLE_URL_HASH %}{% endif %}">{{ page.title }}</a>
+            </div>
+            {% endfor %}
+        </nav>
+        {% endif %}
 			</h1>
 			<p class="lead"></p>
 			<p class="lead">{{ SITESUBTITLE }} </p>
