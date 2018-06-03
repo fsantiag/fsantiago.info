@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 AUTHOR = 'Felipe Santiago'
 SITENAME = 'Felipe Santiago'
 SITEURL = ''
+DISQUS_SITENAME = 'fsantiago-info'
 SITESUBTITLE= 'Techonology, living experiences and gaming smashed together!'
 
 # This is here to allow static files be placed with md files
