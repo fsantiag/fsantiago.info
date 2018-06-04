@@ -1,26 +1,27 @@
 <div class="sidebar">
 	<div class="container sidebar-sticky">
-		<div class="sidebar-about">
-			<h1>
-				<a href="/">
-					<img class="profile-picture" src="{{ SITEURL }}/images/{{ PROFILE_IMAGE }}">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <img class="profile-picture" src="{{ SITEURL }}/images/{{ PROFILE_IMAGE }}">
           {{ SITENAME }}
-				</a>
+        </a>
+
         {% if pages or LINKS %}
+          <div id="page-links">
         <nav>
-            {% if not PAGES_SORT_ATTRIBUTE -%}
-                {% set PAGES_SORT_ATTRIBUTE = 'title' %}
-            {%- endif %}
-            {% for page in pages|sort(attribute=PAGES_SORT_ATTRIBUTE) %}
-            <div id="page-links">
-              <a href="{{ SITEURL }}/{{ page.url }}{% if not DISABLE_URL_HASH %}{% endif %}">{{ page.title }}</a>
-            </div>
-            {% endfor %}
+          {% if not PAGES_SORT_ATTRIBUTE -%}
+          {% set PAGES_SORT_ATTRIBUTE = 'title' %}
+          {%- endif %}
+          {% for page in pages|sort(attribute=PAGES_SORT_ATTRIBUTE) %}
+          <a href="{{ SITEURL }}/{{ page.url }}{% if not DISABLE_URL_HASH %}{% endif %}">{{ page.title }}</a>
+          {% endfor %}
+          <a href="{{ SITEURL }}/archives.html">Archives</a>
         </nav>
+        </div>
         {% endif %}
-			</h1>
-			<p class="lead">{{ SITESUBTITLE }} </p>
-			<p></p>
+      </h1>
+      <p class="lead">{{ SITESUBTITLE }} </p>
 		</div>
 		<nav class="sidebar-nav">
       <a class="sidebar-nav-item" href="mailto:jfelipe.sfilho@gmail.com">
