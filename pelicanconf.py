@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 AUTHOR = 'Felipe Santiago'
 SITENAME = 'Felipe Santiago'
-SITEURL = ''
+SITEURL = 'localhost'
 DISQUS_SITENAME = 'fsantiago-info'
 SITESUBTITLE= 'Techonology, living experiences and gaming smashed together!'
 
@@ -19,6 +19,8 @@ THEME = 'themes/hyde'
 PATH = 'content'
 
 TIMEZONE = 'Asia/Singapore'
+
+RELATIVE_URLS= True
 
 PROFILE_IMAGE = 'myself.jpg'
 # DEFAULT_LANG = 'en'
