@@ -23,7 +23,7 @@ TIMEZONE = 'Asia/Singapore'
 RELATIVE_URLS= True
 
 PROFILE_IMAGE = 'myself.jpg'
-# DEFAULT_LANG = 'en'
+DEFAULT_LANG = 'en'
 
 # Social widget
 SOCIAL = (('github', 'https://github.com/fsantiag/'),
