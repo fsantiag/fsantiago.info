@@ -22,7 +22,7 @@ TIMEZONE = 'Asia/Singapore'
 
 RELATIVE_URLS= True
 
-PROFILE_IMAGE = 'myself.jpg'
+PROFILE_IMAGE = 'myself.png'
 DEFAULT_LANG = 'en'
 
 # Social widget
