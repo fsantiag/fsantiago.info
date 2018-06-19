@@ -70,7 +70,17 @@ html {
     text-align: center;
   }
 }
-
+.tag-cloud a {
+    background-color: #333;
+    padding: .2em .6em .2em;
+    font-size: .74em;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+}
 /* Sidebar links */
 .sidebar a {
   color: #fff;
@@ -258,7 +268,7 @@ a.sidebar-nav-item.active:focus {
 .theme-base-0d .sidebar {
   background-color: #333;
 }
-.theme-base-0d .content a,
+/* .theme-base-0d .content a, */
 .theme-base-0d .related-posts li a:hover {
   color: #333;
 }
