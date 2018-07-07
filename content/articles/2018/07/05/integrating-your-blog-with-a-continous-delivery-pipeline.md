@@ -44,7 +44,7 @@ Fumex
     }
 
 Testing
-```foo
-This is how I highlight a <b>text</b>
+```
+This is how I highlight a text
 ```
 
