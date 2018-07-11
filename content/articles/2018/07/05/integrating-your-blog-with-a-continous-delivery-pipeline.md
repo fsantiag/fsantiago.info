@@ -89,7 +89,7 @@ Because it doesn't know the host
           ssh_known_hosts: fsantiago.info
 
 Now we are going to be prompted for a password because we didn't add the key to the ssh-agent
-Dont forget to start the ssh-agent before, otherwise ssh-add will fail
+Dont forget to start the ssh-agent before and set key only accesible to yur, otherwise ssh-add will fail
 
         :::shell
         before_deploy:
