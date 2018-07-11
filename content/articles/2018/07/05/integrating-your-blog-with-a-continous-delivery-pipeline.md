@@ -21,11 +21,13 @@ After some reading, I added the .travis.yml file to the repository, it looked li
 
     :::yaml
     language: python
+    cache: pip
     python:
     - '3.6'
     install: pip install -r requirements.txt
     script: make publish
 
+I added the cache tag to cache any dependencies that we download using pip so we don't do that every time
 Very simple, right? Every time a commit from now on, Travis will automatically pick my changes and build my project. As you can see, this yaml tells Travis to install
 a base structure for a python application (version 3.6), install all the dependencies of my application using pip and finally to run the `make publish` command
 to build my blog.
@@ -69,11 +71,12 @@ Travis will use before_install, however I prefer before_deploy cause I just want
 
 * Configure the deploy job on travis to decrypt and use the key during deployment step
 
-By reading the documentation, I saw that we could use after_success to run the deploy however a non zero return code wouldn't break the build, so I decided to use the deploy with a custom script.
+By reading the documentation, I saw that we could use after_success to run the deploy however a non zero return code wouldn't break the build, so I decided to use the deploy with a custom script. I also added the skip_cleanup that would prevent travis from resetting my working direcotry and deleting all changes during the build.
 
         :::shell
         deploy:
           provider: script
+          skip_cleanup: true
           script: bash scripts/deploy.sh
           on:
             branch: develop
