@@ -68,12 +68,22 @@ Travis will use before_install, however I prefer before_deploy cause I just want
         git add deploy_rsa.enc
 
 * Configure the deploy job on travis to decrypt and use the key during deployment step
+
 By reading the documentation, I saw that we could use after_success to run the deploy however a non zero return code wouldn't break the build, so I decided to use the deploy with a custom script.
 
         :::shell
         deploy:
-  provider: script
-  script: bash scripts/deploy.sh
-  on:
-    branch: develop
+          provider: script
+          script: bash scripts/deploy.sh
+          on:
+            branch: develop
 
+When you push the changes, travis will be prompted
+```
+Are you sure you want to continue connecting (yes/no)?
+```
+Because it doesn't know the host
+
+        :::shell
+        addons:
+          ssh_known_hosts: fsantiago.info
