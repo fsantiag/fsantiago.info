@@ -89,3 +89,11 @@ Because it doesn't know the host
           ssh_known_hosts: fsantiago.info
 
 Now we are going to be prompted for a password because we didn't add the key to the ssh-agent
+Dont forget to start the ssh-agent before, otherwise ssh-add will fail
+
+        :::shell
+        before_deploy:
+        - openssl aes-256-cbc -K $encrypted_da7eec2e51b3_key -iv $encrypted_da7eec2e51b3_iv
+          -in travis_rsa.enc -out /tmp/travis_rsa -d
+        - eval "$(ssh-agent -s)"
+        - ssh-add /tmp/travis_rsa
