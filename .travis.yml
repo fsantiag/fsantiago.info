@@ -19,7 +19,7 @@ addons:
 # - ssh-add /tmp/fsantiago.info_rsa
 deploy:
   provider: script
-  # skip_cleanup: true
+  skip_cleanup: true
   script: rsync -r --delete-before --quiet $TRAVIS_BUILD_DIR/output/* fsantiago@fsantiago.info:/home/fsantiago/fsantiago.info/content
   on:
     branch: master
