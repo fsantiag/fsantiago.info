@@ -36,8 +36,9 @@ Nice, at this point the blog was building fine, but I wanted more! I wanted Trav
 * Create a new ssh key pair for Travis:
 
         :::shell
-        ssh-keygen -t rsa -b 4096 -C 'build@travis-ci.org' -f ./deploy_rsa
-        ssh-copy-id -i deploy_rsa.pub myuser@myhost
+        ssh-keygen -t rsa -b 4096 -C 'build@travis-ci.org' -f ./travis_rsa
+
+Tip: Don't set the password for the key so travis will not be prompted when connecting
 
 * Add the public key to the VPS so Travis can connect
 
@@ -55,10 +56,10 @@ Nice, at this point the blog was building fine, but I wanted more! I wanted Trav
         :::yaml
         before_install:
         - openssl aes-256-cbc -K $encrypted_da7eec2e51b3_key -iv $encrypted_da7eec2e51b3_iv
-          -in mykey_rsa.pub.enc -out mykey_rsa.pub -d
+          -in travis_rsa.enc -out travis_rsa -d
 
     And will also save the password to decrypt the file as an enviornment variable that only your build job have access
-
+Travis will use before_install, however I prefer before_deploy cause I just want to execute that step in case of deployment.
 
 * Cleanup and push
 
@@ -67,3 +68,12 @@ Nice, at this point the blog was building fine, but I wanted more! I wanted Trav
         git add deploy_rsa.enc
 
 * Configure the deploy job on travis to decrypt and use the key during deployment step
+By reading the documentation, I saw that we could use after_success to run the deploy however a non zero return code wouldn't break the build, so I decided to use the deploy with a custom script.
+
+        :::shell
+        deploy:
+  provider: script
+  script: bash scripts/deploy.sh
+  on:
+    branch: develop
+
