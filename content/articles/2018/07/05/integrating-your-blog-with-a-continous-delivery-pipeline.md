@@ -131,5 +131,5 @@ the tasks:
 
 
 Awesome! That is all about it! We are now able to use continous deployment to take our blog to production any time! Of course, my blog is very small and this is
-probably an overkill solution, however I did focusing on practicing/learning. I hope you liked the article and if you have a any questions/feedback, leave a commenti
+probably an overkill solution, however I did focusing on practicing/learning. I hope you liked the article and if you have a any questions/feedback, leave a comment
  or drop me an email! I will be happy to get in touch!
