@@ -28,10 +28,10 @@ After some reading, I added the .travis.yml at the root of repository, similar t
     script: make publish
 
 Very simple, right? Every time a commit from now on, Travis will automatically pick my changes and build my project. As you can see, this yaml tells Travis to install
-a base structure for a python application (version 3.6), install all the dependencies of my application using pip and finally to run the `make publish` command
+a base structure for a python application (version 3.6), install all the dependencies of my application using pip and finally to run the *make publish* command
 to build my blog. Oh, I also added the cache tag to prevent downloading dependencies every build!
 
-## 2. Automating the VPS deployment
+## 2. Automating the deployment on the Virtual Private Server
 Nice, at this point the blog was building fine, but I wanted more! I wanted Travis to deploy to my production server every single commit. Let's do this!
 Once again, I started we some reading to understand about options. Finally, I decided to use rsync to copy my blog files over SSH and here is how I broke down
 the tasks:
@@ -86,7 +86,7 @@ the tasks:
 
 * Configure the deployment job:
 
-    I saw that we could use **after_success** tag to run the deploy, however, a non zero return code would NOT break the build. So, I decided to use the **deploy** tag
+    I saw that we could use `after_success` tag to run the deploy, however, a non zero return code would NOT break the build. So, I decided to use the `deploy` tag
     with a  custom script. I also added the **skip_cleanup** tag that would prevent travis from resetting my working directory and deleting all files generated
     during the build.
 
@@ -98,9 +98,11 @@ the tasks:
           on:
             branch: master
 
-    Here, I especifically mentioned to only deploy if we are working on the master branch. That is why the **before_deploy** tag I mentioned earlier
+    Here, I especifically mentioned to only deploy if we are working on the master branch. That is why the `before_deploy` tag I mentioned earlier
     also makes sense. If I ever push changes to a branch, my blog would build but no deployment would be executed. If we are not deploying, no need
     for decrypting the key, right?
+
+    The `script` tag executes the *rsync* command that will actually copy the files to server. The files are copied straight to the web server folder.
 
     Make sure to also add your VPS host as a known host to prevent being asked to add the fingerprint during deployment using the following:
 
