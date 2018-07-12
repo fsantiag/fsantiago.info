@@ -1,5 +1,5 @@
 Title: Deploying your blog using a Continous Delivery Pipeline over SSH!
-Date: 2018-07-15 22:48
+Date: 2018-07-12 22:48
 Category: Technology
 Status: draft
 Tags: CI/CD, Travis, SSH, Deployment
@@ -8,7 +8,8 @@ Lang: en
 I started this blog as Wordpress blog. By that time, I thought I could just use some of the features that these blog engines provide so
 I would just focus on writing content. In the beginning that was true, but I realised that Wordpress was "too heavy" for my purpose.
 I didn't want to take care of a database, search for plugins or automate backups (although I liked the automation part of it ;]).
-That was when a friend at work (thanks [Jesstern](http://jsstrn.me/)) reminded me that I could use static site generators and I liked the idea.
+That was when a friend at work (thanks [Jesstern](http://jsstrn.me/)) reminded me that I could use static site generators and I liked the idea. In addition,
+I decided to use a delivery pipeline to take my blog to production!
 
 ## 1. Setting up the basic structure for TravisCI
 Well, I started by choosing the CI service. At first, I thought I could host on my server, but then I realised I didn't want to worry about that right now. Maybe in the
@@ -16,7 +17,7 @@ future. I ended up going with [TravisCI](http://travis-ci.org): popular service,
 On their [docs](https://docs.travis-ci.com/user/getting-started/#To-get-started-with-Travis-CI), there is a session explaining how to get started with the service.
 I recommend you to go over the topics there if you haven't.
 
-After some reading, I added the .travis.yml file at the root of repository, similar to this:
+After some reading, I added the .travis.yml at the root of repository, similar to this:
 
     :::yaml
     language: python
@@ -85,8 +86,9 @@ the tasks:
 
 * Configure the deployment job:
 
-    I saw that we could use after_success tag to run the deploy, however, a non zero return code would NOT break the build. So, I decided to use the deploy tag with a
-    custom script. I also added the skip_cleanup tag that would prevent travis from resetting my working directory and deleting all files generated during the build.
+    I saw that we could use **after_success** tag to run the deploy, however, a non zero return code would NOT break the build. So, I decided to use the **deploy** tag
+    with a  custom script. I also added the **skip_cleanup** tag that would prevent travis from resetting my working directory and deleting all files generated
+    during the build.
 
         :::yaml
         deploy:
@@ -96,7 +98,7 @@ the tasks:
           on:
             branch: master
 
-    Here, I especifically mentioned to only deploy if we are working on the master branch. That is why the before_deploy tag I mentioned earlier
+    Here, I especifically mentioned to only deploy if we are working on the master branch. That is why the **before_deploy** tag I mentioned earlier
     also makes sense. If I ever push changes to a branch, my blog would build but no deployment would be executed. If we are not deploying, no need
     for decrypting the key, right?
 
@@ -128,5 +130,6 @@ the tasks:
         git add travis_rsa.enc
 
 
-Awesome! That is all about it!We are now able to use continous deployment to take our blog to production any time!
-I hope you liked the article and if you have a any questions/feedback, leave a comment or drop me an email! I will be happy to get in touch!
+Awesome! That is all about it! We are now able to use continous deployment to take our blog to production any time! Of course, my blog is very small and this is
+probably an overkill solution, however I did focusing on practicing/learning. I hope you liked the article and if you have a any questions/feedback, leave a commenti
+ or drop me an email! I will be happy to get in touch!
