@@ -1,23 +1,22 @@
-Title: Deploying your Blog using a Continous Delivery Pipeline!
+Title: Deploying your blog using a Continous Delivery Pipeline over SSH!
 Date: 2018-07-15 22:48
 Category: Technology
 Status: draft
-Tags: CI/CD, Travis
+Tags: CI/CD, Travis, SSH, Deployment
 Lang: en
 
-I started this blog as Wordpress blog. By that time, I thought I could just use some of the features
-that these blog engines provide so I would just focus on writing content. In the beginning that was
-true, but I realised that Wordpress was "too heavy" for my purpose. I didn't want to take care of a
-database, search for plugins or automate backups (although I liked the automation part of it ;]). That was when a friend at work (thanks [Jesstern](http://jsstrn.me/)) reminded me that I could use static content generators. I liked the idea. As an engineer, I could easily track everything using Git, no databases required,
-and I could have everything ready to deploy on my production server using a continous delivery pipeline every commit.
+I started this blog as Wordpress blog. By that time, I thought I could just use some of the features that these blog engines provide so
+I would just focus on writing content. In the beginning that was true, but I realised that Wordpress was "too heavy" for my purpose.
+I didn't want to take care of a database, search for plugins or automate backups (although I liked the automation part of it ;]).
+That was when a friend at work (thanks [Jesstern](http://jsstrn.me/)) reminded me that I could use static site generators and I liked the idea.
 
-## 1. Configuring the Continous Delivery Pipeline
-Well, I started by choosing the CI service. At first, I thought I could host on my server, but then I realised I didn't want to worry about that right now.
-So I ended up going with [TravisCI](http://travis-ci.org): popular service, lots of features and easy to use.
+## 1. Setting up the basic structure for TravisCI
+Well, I started by choosing the CI service. At first, I thought I could host on my server, but then I realised I didn't want to worry about that right now. Maybe in the
+future. I ended up going with [TravisCI](http://travis-ci.org): popular service, lots of features and easy to use.
 On their [docs](https://docs.travis-ci.com/user/getting-started/#To-get-started-with-Travis-CI), there is a session explaining how to get started with the service.
 I recommend you to go over the topics there if you haven't.
 
-After some reading, I added the .travis.yml file to the repository, it looked like this:
+After some reading, I added the .travis.yml file at the root of repository, similar to this:
 
     :::yaml
     language: python
@@ -27,76 +26,107 @@ After some reading, I added the .travis.yml file to the repository, it looked li
     install: pip install -r requirements.txt
     script: make publish
 
-I added the cache tag to cache any dependencies that we download using pip so we don't do that every time
 Very simple, right? Every time a commit from now on, Travis will automatically pick my changes and build my project. As you can see, this yaml tells Travis to install
 a base structure for a python application (version 3.6), install all the dependencies of my application using pip and finally to run the `make publish` command
-to build my blog.
+to build my blog. Oh, I also added the cache tag to prevent downloading dependencies every build!
 
 ## 2. Automating the VPS deployment
 Nice, at this point the blog was building fine, but I wanted more! I wanted Travis to deploy to my production server every single commit. Let's do this!
+Once again, I started we some reading to understand about options. Finally, I decided to use rsync to copy my blog files over SSH and here is how I broke down
+the tasks:
 
 * Create a new ssh key pair for Travis:
 
-        :::shell
+    ```
+    Tip: Don't set the password for the key or Travis will be prompted to during the deployment.
+    ```
+
+        :::sh
         ssh-keygen -t rsa -b 4096 -C 'build@travis-ci.org' -f ./travis_rsa
 
-Tip: Don't set the password for the key so travis will not be prompted when connecting
+* Add the public key to the VPS:
 
-* Add the public key to the VPS so Travis can connect
+    This is how we will tell your VPS server to allow Travis to connect using the private key.
 
-        :::shell
-        ssh-copy-id -i deploy_rsa.pub myuser@myhost
-    All keys were skipped because they already, use -f
+    ```
+    Tip: If you get a messaging saying that all keys were skipped because they were already added, just add the -f (force) option.
+    If you prefer, you can add the key manually by inserting in the authorized_keys file under ~/.ssh
+    ```
 
-* Encrypt the private key using Travis CLI
+        :::sh
+        ssh-copy-id -i travis_rsa.pub <myuser>@<myhost>
 
-        :::shell
-        travis encrypt-file deploy_rsa --add
 
-    travis command line will add this to your .travis file
+* Encrypt the private key using Travis CLI:
+
+    Travis provides a command line tool to interface with TravisCI service. [Here](https://github.com/travis-ci/travis.rb#installation) you can find
+ some installation instructions and this is the command we can run:
+
+        :::sh
+        travis encrypt-file travis_rsa --add
+
+    If successful, this command will add the following to your .travis.yml:
 
         :::yaml
         before_install:
-        - openssl aes-256-cbc -K $encrypted_da7eec2e51b3_key -iv $encrypted_da7eec2e51b3_iv
-          -in travis_rsa.enc -out travis_rsa -d
+        - openssl aes-256-cbc -K $encrypted_****_key -iv $encrypted_****_iv
+          -in travis_rsa.enc -out /tmp/travis_rsa -d
 
-    And will also save the password to decrypt the file as an enviornment variable that only your build job have access
-Travis will use before_install, however I prefer before_deploy cause I just want to execute that step in case of deployment.
+    and also save the password to decrypt the file as an environment variable that only your build job have access.
 
-* Cleanup and push
+    ```
+    Tip: Travis will add the before_install tag, however I noticed that I wanted this step to execute only in case of deployment, so I
+    replaced it with the before_deploy.
+    ```
 
-        :::shell
-        rm -f deploy_rsa deploy_rsa.pub
-        git add deploy_rsa.enc
+    ```
+    Tip: I extracted my key in the /tmp folder to make sure I would not copy it by mistake to a wrong place.
+    ```
 
-* Configure the deploy job on travis to decrypt and use the key during deployment step
+* Configure the deployment job:
 
-By reading the documentation, I saw that we could use after_success to run the deploy however a non zero return code wouldn't break the build, so I decided to use the deploy with a custom script. I also added the skip_cleanup that would prevent travis from resetting my working direcotry and deleting all changes during the build.
+    I saw that we could use after_success tag to run the deploy, however, a non zero return code would NOT break the build. So, I decided to use the deploy tag with a
+    custom script. I also added the skip_cleanup tag that would prevent travis from resetting my working directory and deleting all files generated during the build.
 
-        :::shell
+        :::yaml
         deploy:
           provider: script
           skip_cleanup: true
-          script: bash scripts/deploy.sh
+          script: rsync -r --delete-before --quiet $TRAVIS_BUILD_DIR/output/* fsantiago@fsantiago.info:/home/fsantiago/fsantiago.info/content
           on:
-            branch: develop
+            branch: master
 
-When you push the changes, travis will be prompted
-```
-Are you sure you want to continue connecting (yes/no)?
-```
-Because it doesn't know the host
+    Here, I especifically mentioned to only deploy if we are working on the master branch. That is why the before_deploy tag I mentioned earlier
+    also makes sense. If I ever push changes to a branch, my blog would build but no deployment would be executed. If we are not deploying, no need
+    for decrypting the key, right?
 
-        :::shell
+    Make sure to also add your VPS host as a known host to prevent being asked to add the fingerprint during deployment using the following:
+
+        :::yaml
         addons:
-          ssh_known_hosts: fsantiago.info
+          ssh_known_hosts: <myhost>
 
-Now we are going to be prompted for a password because we didn't add the key to the ssh-agent
-Dont forget to start the ssh-agent before and set key only accesible to yur, otherwise ssh-add will fail
+    At this point, if we push the changes and observe what Travis would do, you will see that we will be prompted for a password.
+    That is expected because we are not using the SSH key yet! We added a line to decrypt the key, but we haven't actually added the key to the ssh-agent. Therefore,
+    the rsync command actually tries to use password authentication. Let's fix that now.
+
+    Oh, we can't forget to start the ssh-agent before and set the right permission to the key file, otherwise ssh-add will fail:
 
         :::shell
         before_deploy:
-        - openssl aes-256-cbc -K $encrypted_da7eec2e51b3_key -iv $encrypted_da7eec2e51b3_iv
+        - openssl aes-256-cbc -K $encrypted_****_key -iv $encrypted_****_iv
           -in travis_rsa.enc -out /tmp/travis_rsa -d
         - eval "$(ssh-agent -s)"
         - ssh-add /tmp/travis_rsa
+
+* Cleanup:
+
+    Last but not least, make sure to delete the keys and only push the encrypted file!
+
+        :::shell
+        rm -f travis_rsa travis_rsa.pub
+        git add travis_rsa.enc
+
+
+Awesome! That is all about it!We are now able to use continous deployment to take our blog to production any time!
+I hope you liked the article and if you have a any questions/feedback, leave a comment or drop me an email! I will be happy to get in touch!
