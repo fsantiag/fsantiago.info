@@ -36,100 +36,93 @@ Nice, at this point the blog was building fine, but I wanted more! I wanted Trav
 Once again, I started we some reading to understand about options. Finally, I decided to use rsync to copy my blog files over SSH and here is how I broke down
 the tasks:
 
-* Create a new ssh key pair for Travis:
+### 2.1 Create a new ssh key pair for Travis:
 
-    ```
-    Tip: Don't set the password for the key or Travis will be prompted to during the deployment.
-    ```
+```Tip: Don't set the password for the key or Travis will be prompted to during the deployment.```
 
-        :::sh
-        ssh-keygen -t rsa -b 4096 -C 'build@travis-ci.org' -f ./travis_rsa
+    :::sh
+    ssh-keygen -t rsa -b 4096 -C 'build@travis-ci.org' -f ./travis_rsa
 
-* Add the public key to the VPS:
+### 2.2 Add the public key to the VPS:
 
-    This is how we will tell your VPS server to allow Travis to connect using the private key.
+This is how we will tell your VPS server to allow Travis to connect using the private key.
 
-    ```
-    Tip: If you get a messaging saying that all keys were skipped because they were already added, just add the -f (force) option.
-    If you prefer, you can add the key manually by inserting in the authorized_keys file under ~/.ssh
-    ```
+```Tip: If you get a messaging saying that all keys were skipped because they were already added, just add the -f (force) option. If you prefer, you can add
+ the key manually by inserting in the authorized_keys file under ~/.ssh```
 
-        :::sh
-        ssh-copy-id -i travis_rsa.pub <myuser>@<myhost>
+    :::sh
+    ssh-copy-id -i travis_rsa.pub <myuser>@<myhost>
 
 
-* Encrypt the private key using Travis CLI:
+### 2.3 Encrypt the private key using Travis CLI:
 
-    Travis provides a command line tool to interface with TravisCI service. [Here](https://github.com/travis-ci/travis.rb#installation) you can find
+Travis provides a command line tool to interface with TravisCI service. [Here](https://github.com/travis-ci/travis.rb#installation) you can find
  some installation instructions and this is the command we can run:
 
-        :::sh
-        travis encrypt-file travis_rsa --add
+    :::sh
+    travis encrypt-file travis_rsa --add
 
-    If successful, this command will add the following to your .travis.yml:
+If successful, this command will add the following to your .travis.yml:
 
-        :::yaml
-        before_install:
-        - openssl aes-256-cbc -K $encrypted_****_key -iv $encrypted_****_iv
-          -in travis_rsa.enc -out /tmp/travis_rsa -d
+    :::yaml
+    before_install:
+    - openssl aes-256-cbc -K $encrypted_****_key -iv $encrypted_****_iv
+      -in travis_rsa.enc -out /tmp/travis_rsa -d
 
-    and also save the password to decrypt the file as an environment variable that only your build job have access.
+and also save the password to decrypt the file as an environment variable that only your build job have access.
 
-    ```
-    Tip: Travis will add the before_install tag, however I noticed that I wanted this step to execute only in case of deployment, so I
-    replaced it with the before_deploy.
-    ```
+```Tip: Travis will add the before_install tag, however I noticed that I wanted this step to execute only in case of deployment, so I replaced
+it with the before_deploy.```
 
-    ```
-    Tip: I extracted my key in the /tmp folder to make sure I would not copy it by mistake to a wrong place.
-    ```
+```Tip: I extracted my key in the /tmp folder just to make sure I would not copy it by mistake to a wrong place and once job completed, it would be completely gone.```
 
-* Configure the deployment job:
+### 2.4 Configure the deployment job:
 
-    I saw that we could use `after_success` tag to run the deploy, however, a non zero return code would NOT break the build. So, I decided to use the `deploy` tag
-    with a  custom script. I also added the **skip_cleanup** tag that would prevent travis from resetting my working directory and deleting all files generated
-    during the build.
+I saw that we could use `after_success` tag to run the deploy, however, a non zero return 
+code would [NOT](https://docs.travis-ci.com/user/customizing-the-build/#Breaking-the-Build) break the build. So, I decided to use the `deploy` tag
+with a  custom script. I also added the **skip_cleanup** tag that would prevent travis from resetting my working directory and deleting all files generated
+during the build.
 
-        :::yaml
-        deploy:
-          provider: script
-          skip_cleanup: true
-          script: rsync -r --delete-before --quiet $TRAVIS_BUILD_DIR/output/* fsantiago@fsantiago.info:/home/fsantiago/fsantiago.info/content
-          on:
-            branch: master
+    :::yaml
+    deploy:
+      provider: script
+      skip_cleanup: true
+      script: rsync -r --delete-before --quiet $TRAVIS_BUILD_DIR/output/* fsantiago@fsantiago.info:/home/fsantiago/fsantiago.info/content
+      on:
+        branch: master
 
-    Here, I especifically mentioned to only deploy if we are working on the master branch. That is why the `before_deploy` tag I mentioned earlier
-    also makes sense. If I ever push changes to a branch, my blog would build but no deployment would be executed. If we are not deploying, no need
-    for decrypting the key, right?
+Here, I especifically mentioned to only deploy if we are working on the master branch. That is why the `before_deploy` tag I mentioned earlier
+also makes sense. If I ever push changes to a branch, my blog would build but no deployment would be executed. If we are not deploying, no need
+for decrypting the key, right?
 
-    The `script` tag executes the *rsync* command that will actually copy the files to server. The files are copied straight to the web server folder.
+The `script` tag executes the *rsync* command that will actually copy the files to server. The files are copied straight to the web server folder.
 
-    Make sure to also add your VPS host as a known host to prevent being asked to add the fingerprint during deployment using the following:
+Make sure to also add your VPS host as a known host to prevent being asked to add the fingerprint during deployment using the following:
 
-        :::yaml
-        addons:
-          ssh_known_hosts: <myhost>
+    :::yaml
+    addons:
+      ssh_known_hosts: <myhost>
 
-    At this point, if we push the changes and observe what Travis would do, you will see that we will be prompted for a password.
-    That is expected because we are not using the SSH key yet! We added a line to decrypt the key, but we haven't actually added the key to the ssh-agent. Therefore,
-    the rsync command actually tries to use password authentication. Let's fix that now.
+At this point, if we push the changes and observe what Travis would do, you will see that we will be prompted for a password.
+That is expected because we are not using the SSH key yet! We added a line to decrypt the key, but we haven't actually added the key to the ssh-agent. Therefore,
+the rsync command actually tries to use password authentication. Let's fix that now.
 
-    Oh, we can't forget to start the ssh-agent before and set the right permission to the key file, otherwise ssh-add will fail:
+Oh, we can't forget to start the ssh-agent before and set the right permission to the key file, otherwise ssh-add will fail:
 
-        :::shell
-        before_deploy:
-        - openssl aes-256-cbc -K $encrypted_****_key -iv $encrypted_****_iv
-          -in travis_rsa.enc -out /tmp/travis_rsa -d
-        - eval "$(ssh-agent -s)"
-        - ssh-add /tmp/travis_rsa
+    :::shell
+    before_deploy:
+    - openssl aes-256-cbc -K $encrypted_****_key -iv $encrypted_****_iv
+      -in travis_rsa.enc -out /tmp/travis_rsa -d
+    - eval "$(ssh-agent -s)"
+    - ssh-add /tmp/travis_rsa
 
-* Cleanup:
+### 2.5 Cleanup:
 
-    Last but not least, make sure to delete the keys and only push the encrypted file!
+Last but not least, make sure to delete the keys and only push the encrypted file!
 
-        :::shell
-        rm -f travis_rsa travis_rsa.pub
-        git add travis_rsa.enc
+    :::shell
+    rm -f travis_rsa travis_rsa.pub
+    git add travis_rsa.enc
 
 
 Awesome! That is all about it! We are now able to use continous deployment to take our blog to production any time! Of course, my blog is very small and this is
