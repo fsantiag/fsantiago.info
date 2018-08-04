@@ -20,8 +20,7 @@ As a side note, keep in mind that Travis requires you to use Github and it is on
 
 If you are not familiar with continous integration (or just CI), check out this [article](https://www.thoughtworks.com/continuous-integration) that my employer [ThoughtWorks](https://www.thoughtworks.com/) has published. It is great to have an overview.
 
-
-```At this point, I am assuming that you already have some blog/website/whatever and you've read the docs that I referenced in the previous paragraph. Regarding this blog, I am using [Pelican](http://docs.getpelican.com/en/stable/) to generate it and that is the reason why you will see an Python environment being setup on Travis.```
+**At this point, I am assuming that you already have some blog/website/whatever and you read the docs that I referenced in the previous paragraph. Regarding this blog, I am using [Pelican](http://docs.getpelican.com/en/stable/) to generate it and that is the reason why you will see an Python environment being setup on Travis in the next section.**
 
 After some reading, I added the .travis.yml at the root of repository, similar to this:
 
