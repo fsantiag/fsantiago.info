@@ -16,11 +16,12 @@ future. That is why I ended up going with [Travis CI](http://travis-ci.org): pop
 
 On their [docs](https://docs.travis-ci.com/user/getting-started/#To-get-started-with-Travis-CI), there is a session explaining how to get started with the service.
 I recommend you to go over the topics there if you haven't. It will help you to not feel lost in the next sections as well authorize Travis to connect to your repository.
+As a side note, keep in mind that Travis requires you to use Github and it is only free if your project is public.
 
 If you are not familiar with continous integration (or just CI), check out this [article](https://www.thoughtworks.com/continuous-integration) that my employer [ThoughtWorks](https://www.thoughtworks.com/) has published. It is great to have an overview.
 
 
-```At this point, I am assuming that you already have some blog/website/whatever and the next steps will help you to integrate it into a continous delivery pipeline.```
+```At this point, I am assuming that you already have some blog/website/whatever and you've read the docs that I referenced in the previous paragraph. Regarding this blog, I am using [Pelican](http://docs.getpelican.com/en/stable/) to generate it and that is the reason why you will see an Python environment being setup on Travis.```
 
 After some reading, I added the .travis.yml at the root of repository, similar to this:
 
