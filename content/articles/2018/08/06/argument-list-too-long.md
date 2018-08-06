@@ -27,23 +27,27 @@ In this case, the external portion was related to the API response. That was the
 
 I compared the last successful job with the failing one. The API response was a bit bigger in the failing job, which connects with the error message: `Argument list too long`.
 At this point I already had something in mind: the API response has more data than before, which causes the command argument to be bigger than expected and therefore, the
-command fails because the argument list is indeed too long.
+command fails because the argument is indeed too long.
 
 Good, I thought I was on the right track, however I didn't know exactly what was actually causing the problem.
 In this case, any of the commands could have some limitation: `sed`, `echo`, or even the pipe itself.
 
 I went on the internet looking for this especific error and I found some interesting results [here](https://linux.die.net/man/2/execve), [here](https://stackoverflow.com/questions/11289551/argument-list-too-long-error-for-rm-cp-mv-commands) and [here](https://www.linuxjournal.com/article/6060).
 
-In those links, I was able to notice this is a kernel limitation on the size of command line arguments. Most of the links were reporting problems when using wildcards in the commands, however the actual problem was not the wildcard itself but the size of the command generated when using the wildcards.
-Most UNIX implementations have some limit in the size of a command line argument. That limit can be verified by running the following command:
+In those links, I was able to notice there is a kernel limitation on the size of one command line argument as well as the amount of command arguments used. The links were reporting problems when using wildcards in the commands, however the actual problem was not the wildcard itself but how many arguments were generated when using the wildcards.
+Most UNIX implementations have some limit in how many command line arguments you can pass. That limit can be verified by running the following command:
 
 ```
 getconf ARG_MAX
 ```
 
+In my case, I didn't have multiple arguments, however I had ONE big argument. That was when I found the MAX_ARG_STRLEN.
+Make sure here to not confuse the ARG_MAX with MAX_ARG_STRLEN.
+The first one refers to how many arguments are allowed and the later to the maximum size of an argument. I am saying that here because the second one was actually my problem and you can verify it's value at the [linux source code](https://github.com/torvalds/linux/blob/ead751507de86d90fa250431e9990a8b881f713c/include/uapi/linux/binfmts.h).
+
 Finally, we found a proper answer. Now I could fix the problem in peace! ;]
 
-In my case, I decided to write the API response to a temporary file and later run the operations using the file. This way the size of the API response wouldn't matter, since the command would always point to the file. Something similar to this:
+I decided to write the API response to a temporary file and later run the operations using the file. This way the size of the API response wouldn't matter, since the command would always point to the file. Something similar to this:
 
 ```yaml
 - name: Write to file
