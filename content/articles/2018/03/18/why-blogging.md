@@ -2,7 +2,7 @@ Title: Why blogging?
 Date: 2018-03-18 18:32
 Category: Living Experiences
 Slug: why-blogging
-Tags: blogging
+Tags: Blogging
 Lang: en
 
 In the past few years, I’ve been trying to find some time to put my own website/blog online.
